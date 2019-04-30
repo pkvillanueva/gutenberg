@@ -125,7 +125,7 @@ class RichText extends Component {
 		this.setRef = this.setRef.bind( this );
 		this.valueToEditableHTML = this.valueToEditableHTML.bind( this );
 		this.handleHorizontalNavigation = this.handleHorizontalNavigation.bind( this );
-		this.onPointerDown = this.onPointerDown.bind( this );
+		this.onClick = this.onClick.bind( this );
 		this.formatToValue = this.formatToValue.bind( this );
 		this.onSplit = this.onSplit.bind( this );
 
@@ -876,6 +876,10 @@ class RichText extends Component {
 
 		selection.removeAllRanges();
 		selection.addRange( range );
+
+		target.setAttribute( 'data-rich-text-format-boundary', 'set' );
+
+		event.preventDefault();
 	}
 
 	componentDidUpdate( prevProps ) {
@@ -1055,8 +1059,7 @@ class RichText extends Component {
 					onKeyDown={ this.onKeyDown }
 					onFocus={ this.onFocus }
 					onBlur={ this.onBlur }
-					onMouseDown={ this.onPointerDown }
-					onTouchStart={ this.onPointerDown }
+					onClick={ this.onClick }
 					setRef={ this.setRef }
 				/>
 				{ isPlaceholderVisible &&
