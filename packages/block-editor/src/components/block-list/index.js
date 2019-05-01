@@ -198,6 +198,8 @@ class BlockList extends Component {
 			return;
 		}
 
+		// This is much faster than having to search all attributes for text
+		// and parse the HTML. Perhaps this should also be debounced.
 		const noteAnchors = document.querySelectorAll( '.note-anchor' );
 		const notes = Array.from( noteAnchors ).map( ( element ) => {
 			return {
@@ -256,21 +258,21 @@ class BlockList extends Component {
 						<style
 							dangerouslySetInnerHTML={ {
 								__html: `
-	body {
-		counter-reset: footnotes;
-	}
+body {
+	counter-reset: footnotes;
+}
 
-	.editor-styles-wrapper a.note-anchor {
-		counter-increment: footnotes;
-	}
+.editor-styles-wrapper a.note-anchor {
+	counter-increment: footnotes;
+}
 
-	.note-anchor:after {
-		margin-left: 2px;
-		content: '[' counter( footnotes ) ']';
-		vertical-align: super;
-		font-size: smaller;
-	}
-	`,
+.note-anchor:after {
+	margin-left: 2px;
+	content: '[' counter( footnotes ) ']';
+	vertical-align: super;
+	font-size: smaller;
+}
+`,
 							} }
 						/>
 						<ol>
