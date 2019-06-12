@@ -175,7 +175,7 @@ describe( 'actions', () => {
 				expect( isEditorSidebarOpened ).toHaveBeenCalled();
 				expect( openSidebar ).not.toHaveBeenCalled();
 			} );
-			it( 'opens block sidebar if block is selected', () => {
+			it( 'opens Settings Sidebar if block is selected', () => {
 				isEditorSidebarOpened.mockReturnValue( true );
 				getBlockSelectionStart.mockReturnValue( false );
 				const listener = listenerCallback( registryMock );
