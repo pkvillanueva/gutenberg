@@ -1117,18 +1117,17 @@ const RichTextContainer = compose( [
 		identifier = instanceId,
 		isSelected,
 	} ) => {
-		// This should probably be moved to the block editor settings.
-		const { canUserUseUnfilteredHTML } = select( 'core/editor' );
 		const {
 			isCaretWithinFormattedText,
 			getSelectionStart,
 			getSelectionEnd,
+			getSettings,
 		} = select( 'core/block-editor' );
 		const { getFormatTypes } = select( 'core/rich-text' );
 
 		const selectionStart = getSelectionStart();
 		const selectionEnd = getSelectionEnd();
-
+		const { __experimentalCanUserUseUnfilteredHTML } = getSettings();
 		if ( isSelected === undefined ) {
 			isSelected = (
 				selectionStart.clientId === clientId &&
@@ -1137,7 +1136,7 @@ const RichTextContainer = compose( [
 		}
 
 		return {
-			canUserUseUnfilteredHTML: canUserUseUnfilteredHTML(),
+			canUserUseUnfilteredHTML: __experimentalCanUserUseUnfilteredHTML,
 			isCaretWithinFormattedText: isCaretWithinFormattedText(),
 			formatTypes: getFormatTypes(),
 			selectionStart: isSelected ? selectionStart.offset : undefined,
