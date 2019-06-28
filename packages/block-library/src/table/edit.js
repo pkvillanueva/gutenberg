@@ -24,6 +24,7 @@ import {
 	Toolbar,
 	DropdownMenu,
 	Placeholder,
+	IconButton,
 } from '@wordpress/components';
 
 /**
@@ -40,6 +41,8 @@ import {
 	isEmptyTableSection,
 } from './state';
 import icon from './icon';
+import captionTopIcon from './caption-top-icon';
+import captionBottomIcon from './caption-bottom-icon';
 
 const BACKGROUND_COLORS = [
 	{
@@ -291,7 +294,7 @@ export class TableEdit extends Component {
 	 */
 	createOnFocus( selectedCell ) {
 		return () => {
-			this.setState( { selectedCell } );
+			this.setState( { selectedCell, isCaptionSelected: false } );
 		};
 	}
 
@@ -302,16 +305,8 @@ export class TableEdit extends Component {
 	 */
 	getTableControls() {
 		const { selectedCell } = this.state;
-		const { attributes, setAttributes } = this.props;
-		const { captionPosition } = attributes;
-		const isCaptionTop = captionPosition === 'top';
 
 		return [
-			{
-				icon: isCaptionTop ? 'arrow-down-alt' : 'arrow-up-alt',
-				title: isCaptionTop ? __( 'Show Caption Below Table' ) : __( 'Show Caption Above Table' ),
-				onClick: () => setAttributes( { captionPosition: isCaptionTop ? 'bottom' : 'top' } ),
-			},
 			{
 				icon: 'table-row-before',
 				title: __( 'Add Row Before' ),
@@ -424,7 +419,7 @@ export class TableEdit extends Component {
 			setAttributes,
 			isSelected,
 		} = this.props;
-		const { initialRowCount, initialColumnCount } = this.state;
+		const { initialRowCount, initialColumnCount, selectedCell, isCaptionSelected } = this.state;
 		const { hasFixedLayout, caption, captionPosition, head, body, foot } = attributes;
 		const isEmpty = isEmptyTableSection( head ) && isEmptyTableSection( body ) && isEmptyTableSection( foot );
 		const Section = this.renderSection;
@@ -465,22 +460,28 @@ export class TableEdit extends Component {
 			'has-background': !! backgroundColor.color,
 		} );
 
+		const isCaptionTop = captionPosition === 'top';
+		const isCaptionBottom = captionPosition === 'bottom';
+
 		const captionRichTextElement = (
 			<RichText
 				className={ classnames( 'wp-block-table__caption-content', {
 					'is-visible': isSelected || ! RichText.isEmpty( caption ),
-					'is-position-top': captionPosition === 'top',
-					'is-position-bottom': captionPosition === 'bottom',
+					'is-position-top': isCaptionTop,
+					'is-position-bottom': isCaptionBottom,
 				} ) }
 				tagName="p"
 				placeholder={ __( 'Write caption…' ) }
 				value={ caption }
 				onChange={ ( value ) => setAttributes( { caption: value } ) }
 				// Deselect the selected table cell when the caption is focused.
-				unstableOnFocus={ () => this.setState( { selectedCell: null } ) }
+				unstableOnFocus={ () => this.setState( {
+					selectedCell: null,
+					isCaptionSelected: true,
+				} ) }
 				// Only show inlineToolbar when caption is at the bottom,
 				// otherwise it's overlaped by the main block toolbar.
-				inlineToolbar={ captionPosition === 'bottom' }
+				inlineToolbar={ isCaptionBottom }
 			/>
 		);
 
@@ -488,11 +489,22 @@ export class TableEdit extends Component {
 			<>
 				<BlockControls>
 					<Toolbar>
-						<DropdownMenu
-							icon="editor-table"
-							label={ __( 'Edit table' ) }
-							controls={ this.getTableControls() }
-						/>
+						{ !! selectedCell && (
+							<DropdownMenu
+								icon="editor-table"
+								label={ __( 'Edit table' ) }
+								controls={ this.getTableControls() }
+							/>
+						) }
+						{ isCaptionSelected && (
+							<IconButton
+								className={ classnames( 'components-icon-button components-toolbar__control' ) }
+								label={ isCaptionBottom ? __( 'Position caption above table' ) : __( 'Position caption below table' ) }
+								aria-pressed={ this.state.isEditing }
+								onClick={ () => setAttributes( { captionPosition: isCaptionBottom ? 'top' : 'bottom' } ) }
+								icon={ isCaptionBottom ? captionTopIcon : captionBottomIcon }
+							/>
+						) }
 					</Toolbar>
 				</BlockControls>
 				<InspectorControls>
