@@ -32,7 +32,6 @@ module.exports = {
 		'/__device-tests__/',
 	],
 	testURL: 'http://localhost/',
-	modulePathIgnorePatterns: [ '<rootDir>/gutenberg/gutenberg-mobile', 'react-native-aztec-old-submodule' ],
 	moduleDirectories: [ 'node_modules', 'symlinked-packages' ],
 	moduleNameMapper: {
 		// Mock the CSS modules. See https://facebook.github.io/jest/docs/en/webpack.html#handling-static-assets
