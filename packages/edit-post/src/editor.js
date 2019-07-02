@@ -116,7 +116,7 @@ class Editor extends Component {
 	}
 }
 
-export default withSelect( ( select, { postId, postType } ) => {
+export default withSelect( ( select, { postId, postType, initialEdits } ) => {
 	const { isFeatureActive, getPreference } = select( 'core/edit-post' );
 	const { getEntityRecord } = select( 'core' );
 	const { getBlockTypes } = select( 'core/blocks' );
@@ -125,6 +125,7 @@ export default withSelect( ( select, { postId, postType } ) => {
 		hasFixedToolbar: isFeatureActive( 'fixedToolbar' ),
 		focusMode: isFeatureActive( 'focusMode' ),
 		post: getEntityRecord( 'postType', postType, postId ),
+		initialEdits: { ...initialEdits, content: `<!-- wp:post-title /-->` },
 		hiddenBlockTypes: getPreference( 'hiddenBlockTypes' ),
 		blockTypes: getBlockTypes(),
 	};
