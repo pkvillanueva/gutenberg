@@ -24,7 +24,6 @@ import {
 	OPTION_TAKE_PHOTO,
 } from '../index';
 
-
 const MEDIA_URL = 'http://host.media.type';
 const MEDIA_ID = 123;
 
