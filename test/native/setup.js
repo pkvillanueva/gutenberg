@@ -3,20 +3,23 @@
  */
 import { NativeModules } from 'react-native';
 
-// jest.mock( 'react-native-gutenberg-bridge', () => {
-// 	return {
-// 		addEventListener: jest.fn(),
-// 		removeEventListener: jest.fn(),
-// 		subscribeParentGetHtml: jest.fn(),
-// 		subscribeParentToggleHTMLMode: jest.fn(),
-// 		subscribeSetTitle: jest.fn(),
-// 		subscribeSetFocusOnTitle: jest.fn(),
-// 		subscribeUpdateHtml: jest.fn(),
-// 		subscribeMediaAppend: jest.fn(),
-// 		editorDidMount: jest.fn(),
-// 		subscribeMediaUpload: jest.fn(),
-// 	};
-// } );
+jest.mock( 'react-native-gutenberg-bridge', () => {
+	return {
+		addEventListener: jest.fn(),
+		removeEventListener: jest.fn(),
+		subscribeParentGetHtml: jest.fn(),
+		subscribeParentToggleHTMLMode: jest.fn(),
+		subscribeSetTitle: jest.fn(),
+		subscribeSetFocusOnTitle: jest.fn(),
+		subscribeUpdateHtml: jest.fn(),
+		subscribeMediaAppend: jest.fn(),
+		editorDidMount: jest.fn(),
+		subscribeMediaUpload: jest.fn(),
+		requestMediaPickFromMediaLibrary: jest.fn(),
+		requestMediaPickFromDeviceLibrary: jest.fn(),
+		requestMediaPickFromDeviceCamera: jest.fn(),
+	};
+} );
 
 jest.mock( 'react-native-safe-area', () => {
 	const addEventListener = jest.fn();

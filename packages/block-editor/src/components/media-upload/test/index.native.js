@@ -1,12 +1,4 @@
 
-jest.mock( 'react-native-gutenberg-bridge', () => (
-	{
-		requestMediaPickFromMediaLibrary: jest.fn(),
-		requestMediaPickFromDeviceLibrary: jest.fn(),
-		requestMediaPickFromDeviceCamera: jest.fn(),
-	}
-) );
-
 /**
  * External dependencies
  */
