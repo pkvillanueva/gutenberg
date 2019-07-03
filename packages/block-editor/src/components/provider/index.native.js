@@ -5,6 +5,10 @@ import { Component } from '@wordpress/element';
 import { SlotFillProvider } from '@wordpress/components';
 import { withDispatch, RegistryConsumer } from '@wordpress/data';
 import { createHigherOrderComponent, compose } from '@wordpress/compose';
+/**
+ * Internal dependencies
+ */
+import withRegistryProvider from './with-registry-provider';
 
 /**
  * Higher-order component which renders the original component with the current
@@ -135,6 +139,7 @@ class BlockEditorProvider extends Component {
 }
 
 export default compose( [
+	withRegistryProvider,
 	withDispatch( ( dispatch ) => {
 		const {
 			updateSettings,
