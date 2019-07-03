@@ -1,6 +1,11 @@
 /** @flow
  * @format */
 
+/**
+ * External dependencies
+ */
+const glob = require( 'glob' ).sync;
+
 const defaultPlatform = 'android';
 const rnPlatform = process.env.TEST_RN_PLATFORM || defaultPlatform;
 if ( process.env.TEST_RN_PLATFORM ) {
@@ -12,6 +17,9 @@ if ( process.env.TEST_RN_PLATFORM ) {
 }
 
 const configPath = 'test/native';
+
+const transpiledPackageNames = glob( 'packages/*/src/index.js' )
+	.map( ( fileName ) => fileName.split( '/' )[ 1 ] );
 
 module.exports = {
 	verbose: true,
@@ -36,6 +44,7 @@ module.exports = {
 	moduleNameMapper: {
 		// Mock the CSS modules. See https://facebook.github.io/jest/docs/en/webpack.html#handling-static-assets
 		'\\.(scss)$': '<rootDir>/' + configPath + '/__mocks__/styleMock.js',
+		[ `@wordpress\\/(${ transpiledPackageNames.join( '|' ) })$` ]: '<rootDir>/packages/$1/src',
 	},
 	haste: {
 		defaultPlatform: rnPlatform,
