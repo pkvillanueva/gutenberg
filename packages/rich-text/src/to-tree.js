@@ -238,6 +238,7 @@ export function toTree( {
 				...replacements[ i ],
 				isEditableTree,
 				object: true,
+				boundaryClass: isEditableTree && start === i,
 			} ) );
 			// Ensure pointer is text node.
 			pointer = append( getParent( pointer ), '' );

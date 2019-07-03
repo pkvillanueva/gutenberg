@@ -8,7 +8,9 @@ import {
 	mapValues,
 	sortBy,
 	throttle,
+	get,
 } from 'lodash';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -194,7 +196,11 @@ class BlockList extends Component {
 	}
 
 	componentDidUpdate( prevProps ) {
-		if ( this.props.blockAttributes === prevProps.blockAttributes ) {
+		if (
+			// add block order
+			this.props.blockAttributes === prevProps.blockAttributes &&
+			this.props.selectionRef === prevProps.selectionRef
+		) {
 			return;
 		}
 
@@ -203,8 +209,8 @@ class BlockList extends Component {
 		const noteAnchors = document.querySelectorAll( '.note-anchor' );
 		const notes = Array.from( noteAnchors ).map( ( element ) => {
 			return {
-				note: element.getAttribute( 'data-note' ) || '',
 				id: ( element.getAttribute( 'href' ) || '' ).slice( 1 ),
+				isSelected: document.activeElement.isContentEditable && document.activeElement.contains( element ) && !! element.getAttribute( 'data-rich-text-format-boundary' ),
 			};
 		} );
 
@@ -220,7 +226,11 @@ class BlockList extends Component {
 			multiSelectedBlockClientIds,
 			hasMultiSelection,
 			renderAppender,
+			meta = {},
+			onChangeMeta,
 		} = this.props;
+
+		const noteValues = JSON.parse( get( meta, [ 'core/notes' ] ) || '{}' );
 
 		return (
 			<div className="editor-block-list__layout block-editor-block-list__layout">
@@ -253,7 +263,7 @@ class BlockList extends Component {
 
 				{ /* This needs to become a slot/fill */ }
 				{ this.state.notes.length > 0 && ! rootClientId &&
-					<footer>
+					<>
 						<h2><small>Notes</small></h2>
 						<style
 							dangerouslySetInnerHTML={ {
@@ -275,25 +285,44 @@ body {
 `,
 							} }
 						/>
-						<ol>
-							{ this.state.notes.map( ( { note, id } ) =>
-								<li id={ id } key={ id }>
-									<span
-										dangerouslySetInnerHTML={ {
-											__html: note,
-										} }
-									/>
-									{ ' ' }
+						{ this.state.notes.map( ( { id, isSelected }, index ) =>
+							<ol
+								key={ id }
+								start={ index + 1 }
+								className={ classnames( 'note-list', {
+									'is-selected': isSelected,
+								} ) }
+							>
+								<li id={ id }>
 									<a
 										href={ `#${ id }-anchor` }
 										aria-label={ __( 'Back to content' ) }
+										onClick={ () => {
+											// This is a hack to get the target to focus.
+											// The attribute will later be removed when selection is set.
+											document.getElementById( `${ id }-anchor` ).contentEditable = 'false';
+										} }
 									>
-										↩
+										↑
 									</a>
+									{ ' ' }
+									<input
+										aria-label={ __( 'Note' ) }
+										value={ noteValues[ id ] }
+										onChange={ ( event ) => {
+											onChangeMeta( {
+												'core/notes': JSON.stringify( {
+													...noteValues,
+													[ id ]: event.target.value,
+												} ),
+											} );
+										} }
+										placeholder={ __( 'Note' ) }
+									/>
 								</li>
-							) }
-						</ol>
-					</footer>
+							</ol>
+						) }
+					</>
 				}
 			</div>
 		);
@@ -316,9 +345,12 @@ export default compose( [
 			getMultiSelectedBlockClientIds,
 			hasMultiSelection,
 			getBlockAttributesRef,
+			getSettings,
+			getSelectionStart,
 		} = select( 'core/block-editor' );
 
 		const { rootClientId } = ownProps;
+		const settings = getSettings();
 
 		return {
 			blockClientIds: getBlockOrder( rootClientId ),
@@ -330,6 +362,9 @@ export default compose( [
 			multiSelectedBlockClientIds: getMultiSelectedBlockClientIds(),
 			hasMultiSelection: hasMultiSelection(),
 			blockAttributes: getBlockAttributesRef(),
+			selectionRef: getSelectionStart(),
+			onChangeMeta: settings.__experimentalMetaSource.onChange,
+			meta: settings.__experimentalMetaSource.value,
 		};
 	} ),
 	withDispatch( ( dispatch ) => {

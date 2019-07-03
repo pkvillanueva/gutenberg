@@ -1,15 +1,15 @@
 /**
+ * External dependencies
+ */
+import uuid from 'uuid/v4';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
-import { removeFormat } from '@wordpress/rich-text';
+import { removeFormat, isCollapsed, insertObject, applyFormat } from '@wordpress/rich-text';
 import { RichTextToolbarButton } from '@wordpress/block-editor';
-
-/**
- * Internal dependencies
- */
-import InlineUI from './inline';
 
 const name = 'core/note';
 const title = __( 'Note' );
@@ -20,7 +20,6 @@ export const note = {
 	tagName: 'a',
 	className: 'note-anchor',
 	attributes: {
-		note: 'data-note',
 		href: 'href',
 		id: 'id',
 	},
@@ -28,21 +27,34 @@ export const note = {
 		constructor() {
 			super( ...arguments );
 
-			this.open = this.open.bind( this );
-			this.close = this.close.bind( this );
+			this.add = this.add.bind( this );
 			this.remove = this.remove.bind( this );
+		}
 
-			this.state = {
-				isOpen: false,
+		add() {
+			const { value, onChange } = this.props;
+			const id = uuid();
+			const format = {
+				type: name,
+				attributes: {
+					// It does not matter what this is, as long as it is unique per
+					// page.
+					href: `#${ id }`,
+					id: `${ id }-anchor`,
+				},
 			};
-		}
 
-		open() {
-			this.setState( { isOpen: true } );
-		}
+			let newValue;
 
-		close() {
-			this.setState( { isOpen: false } );
+			if ( isCollapsed( value ) ) {
+				const prevStart = value.start;
+				newValue = insertObject( value, format );
+				newValue.start = prevStart;
+			} else {
+				newValue = applyFormat( value, format );
+			}
+
+			onChange( newValue );
 		}
 
 		remove() {
@@ -52,25 +64,15 @@ export const note = {
 		}
 
 		render() {
-			const { isActive, activeAttributes, isObjectActive, activeObjectAttributes, value, onChange } = this.props;
+			const { isActive } = this.props;
 
 			return (
 				<Fragment>
 					<RichTextToolbarButton
 						icon="editor-ol"
 						title={ title }
-						onClick={ isActive ? this.remove : this.open }
+						onClick={ isActive ? this.remove : this.add }
 						isActive={ isActive }
-					/>
-					<InlineUI
-						isOpen={ this.state.isOpen }
-						onClose={ this.close }
-						isActive={ isActive }
-						activeAttributes={ activeAttributes }
-						isObjectActive={ isObjectActive }
-						activeObjectAttributes={ activeObjectAttributes }
-						value={ value }
-						onChange={ onChange }
 					/>
 				</Fragment>
 			);

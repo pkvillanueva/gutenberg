@@ -43,5 +43,11 @@ function gutenberg_reregister_core_block_types() {
 
 		require $blocks_dir . $file;
 	}
+
+	register_post_meta( 'post', 'core/notes', array(
+        'show_in_rest' => true,
+        'single' => true,
+        'type' => 'string',
+    ) );
 }
 add_action( 'init', 'gutenberg_reregister_core_block_types' );
