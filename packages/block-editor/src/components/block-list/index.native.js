@@ -69,8 +69,7 @@ export class BlockList extends Component {
 			// do replace here
 			this.props.replaceBlock( this.props.selectedBlockClientId, newBlock );
 		} else {
-			const indexAfterSelected = this.props.selectedBlockOrder + 1;
-			const insertionIndex = indexAfterSelected || this.props.blockCount;
+			const insertionIndex = this.props.selectedBlockOrder + 1;
 			this.props.insertBlock( newBlock, insertionIndex );
 		}
 	}
