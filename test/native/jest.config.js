@@ -18,8 +18,8 @@ if ( process.env.TEST_RN_PLATFORM ) {
 
 const configPath = 'test/native';
 
-const transpiledPackageNames = glob( 'packages/*/src/index.js' )
-	.map( ( fileName ) => fileName.split( '/' )[ 1 ] );
+const transpiledPackageNames = glob( '../../packages/*/src/index.js' )
+	.map( ( fileName ) => fileName.split( '/' )[ 3 ] );
 
 module.exports = {
 	verbose: true,

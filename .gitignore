@@ -17,4 +17,4 @@ playground/dist
 .cache
 
 # Report generated from jest-junit
-/junit.xml
+test/native/junit.xml
